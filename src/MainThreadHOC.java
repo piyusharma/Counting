@@ -63,7 +63,7 @@ public class MainThreadHOC {
         HashMap<String, Integer> hashMap = new HashMap<>();
         Double endingTimestamp = Double.parseDouble(linkedList.peek().getTimestamp());
         Double startingTimestamp = 0.0;
-        String filename = Utility.threadNameUtility(thread,1);
+        String filename = Utility.threadNameUtility(thread, 1, 0, "");
         while (!linkedList.isEmpty()) {
             Update update = linkedList.poll();
             if (!filename.equals("")) {

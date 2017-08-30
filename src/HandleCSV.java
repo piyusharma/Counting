@@ -5,8 +5,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -17,7 +15,7 @@ public class HandleCSV {
         scanner.useDelimiter("\n");
 
         while (scanner.hasNext()) {
-            fileLines.add(scanner.next());
+            fileLines.add(scanner.next().replace("\r", ""));
         }
         return fileLines;
     }
