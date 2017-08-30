@@ -22,8 +22,11 @@ public class HandleCSV {
     }
 
     static void appendCSV(String filename, String data) throws IOException {
-        createFileIfNotExist(filename);
-        Files.write(Paths.get(filename), data.getBytes(), StandardOpenOption.APPEND);
+        if (createFileIfNotExist(filename)) {
+            Files.write(Paths.get(filename), data.getBytes(), StandardOpenOption.APPEND);
+        } else {
+            Files.write(Paths.get(filename), data.getBytes(), StandardOpenOption.APPEND);
+        }
     }
 
     public static void clearCSV(String filename) throws FileNotFoundException {
@@ -31,8 +34,8 @@ public class HandleCSV {
         writer.close();
     }
 
-    private static void createFileIfNotExist(String filename) throws IOException {
+    private static boolean createFileIfNotExist(String filename) throws IOException {
         File file = new File(filename);
-        file.createNewFile();
+        return file.createNewFile();
     }
 }

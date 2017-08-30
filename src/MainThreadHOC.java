@@ -59,13 +59,16 @@ public class MainThreadHOC {
                 getJSON.get("created").toString(), ((String) getJSON.get("link_id")).split("_")[1]);
     }
 
-    private HOCUtil generateHOC(LinkedList<Update> linkedList) throws IOException {
+    private HOCUtil generateHOC(LinkedList<Update> linkedList, String thread) throws IOException {
         HashMap<String, Integer> hashMap = new HashMap<>();
         Double endingTimestamp = Double.parseDouble(linkedList.peek().getTimestamp());
         Double startingTimestamp = 0.0;
+        String filename = threadToFilename(thread);
         while (!linkedList.isEmpty()) {
             Update update = linkedList.poll();
-            HandleCSV.appendCSV("test.csv", update.toString() + "\n");
+            if (!filename.equals("")) {
+                HandleCSV.appendCSV(filename, update.toString() + "\n");
+            }
             if (linkedList.isEmpty()) {
                 startingTimestamp = Double.parseDouble(update.getTimestamp());
             }
@@ -100,6 +103,13 @@ public class MainThreadHOC {
         return new TimeFormat(seconds, minutes, hours, days);
     }
 
+    private String threadToFilename(String thread) {
+        if (thread.equals("test")) {
+            return "test";
+        }
+        return "";
+    }
+
     private void postDataToThread(HOCUtil hocUtil, String threadID) throws IOException, JSONException {
         String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + threadID, header);
         JSONObject jsonObject = new JSONObject(t);
@@ -112,10 +122,12 @@ public class MainThreadHOC {
         int rank = 1;
         postString.append("Rank|Username|Counts\n---|---|---\n");
         for (Map.Entry<String, Integer> entry : hocUtil.hashMap.entrySet()) {
-            if (!entry.getKey().equals(getUser)) {
-                postString.append(rank).append("|").append(entry.getKey()).append("|").append(entry.getValue()).append("\n");
-            } else {
-                postString.append(rank).append("|**").append(entry.getKey()).append("**|").append(entry.getValue()).append("\n");
+            if (!entry.getKey().equals(getUser) && !entry.getKey().equals("[deleted]")) {
+                postString.append(rank).append("|/u/").append(entry.getKey()).append("|").append(entry.getValue())
+                        .append("\n");
+            } else if (!entry.getKey().equals("[deleted]")) {
+                postString.append(rank).append("|**/u/").append(entry.getKey()).append("**|").append(entry.getValue())
+                        .append("\n");
             }
             rank++;
         }
@@ -127,15 +139,22 @@ public class MainThreadHOC {
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String s = HttpRequests.getToken("xtYsNzO4a8Curw", "00w7cP3wUcuyIjQdtgh1g7JKL9c",
-                "piyushsharma301", "loseyourself1");
+        String accessKey = args[0];
+        String secretKey = args[1];
+        String username = args[2];
+        String password = args[3];
+        String threadID = args[4];
+        String getID = args[5];
+        String thread = args[6];
+        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
-        mainThreadHOC.header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.get("access_token")));
+        mainThreadHOC.header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
+                get("access_token")));
         mainThreadHOC.header.add(new BasicNameValuePair("User-Agent", "Something"));
-        LinkedList<Update> updates = mainThreadHOC.TraverseThread("dmawbte", "6uebdr");
-        HOCUtil userCounts = mainThreadHOC.generateHOC(updates);
-        mainThreadHOC.postDataToThread(userCounts, "6uebdr");
+        LinkedList<Update> updates = mainThreadHOC.TraverseThread(getID, threadID);
+        HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
+        mainThreadHOC.postDataToThread(userCounts, threadID);
     }
 
     class HOCUtil {

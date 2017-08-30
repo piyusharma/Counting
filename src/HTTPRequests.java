@@ -16,7 +16,7 @@ import java.util.List;
 
 
 
-public class HttpRequests {
+class HttpRequests {
 
     static String getToken(String accessKey, String secretKey, String username, String password) throws IOException {
         HttpClient httpClient = HttpClientBuilder.create().build();
@@ -46,7 +46,7 @@ public class HttpRequests {
         return bufferedReader.readLine();
     }
 
-    public static String postRequest(String url, List<NameValuePair> header, List<NameValuePair> postData) throws IOException {
+    static String postRequest(String url, List<NameValuePair> header, List<NameValuePair> postData) throws IOException {
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost(url);
         for (NameValuePair nameValuePair : header) {

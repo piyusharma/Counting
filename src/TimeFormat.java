@@ -1,8 +1,8 @@
 public class TimeFormat {
-    int seconds;
-    int minutes;
-    int hours;
-    int days;
+    private int seconds;
+    private int minutes;
+    private int hours;
+    private int days;
 
     TimeFormat(int seconds,int minutes,int hours,int days){
         this.seconds = seconds;
