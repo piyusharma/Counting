@@ -122,6 +122,32 @@ public class MainThreadHOC {
         System.out.println(HttpRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData));
     }
 
+    private void updateAllSideThreads() throws IOException, JSONException {
+        ThreadLogStats.generateStats("alphanumeric", header);
+        ThreadLogStats.generateStats("binary", header);
+        ThreadLogStats.generateStats("collatz conjecture", header);
+        ThreadLogStats.generateStats("dates", header);
+        ThreadLogStats.generateStats("hexadecimal", header);
+        ThreadLogStats.generateStats("increasing base", header);
+        ThreadLogStats.generateStats("increasing sequences", header);
+        ThreadLogStats.generateStats("letters", header);
+        ThreadLogStats.generateStats("musical notes", header);
+        ThreadLogStats.generateStats("negative numbers", header);
+        ThreadLogStats.generateStats("number palindromes", header);
+        ThreadLogStats.generateStats("octal", header);
+        ThreadLogStats.generateStats("permutations", header);
+        ThreadLogStats.generateStats("powerball", header);
+        ThreadLogStats.generateStats("prime factorization", header);
+        ThreadLogStats.generateStats("quaternary", header);
+        ThreadLogStats.generateStats("rational numbers", header);
+        ThreadLogStats.generateStats("roman numerals", header);
+        ThreadLogStats.generateStats("senary", header);
+        ThreadLogStats.generateStats("ternary", header);
+        ThreadLogStats.generateStats("top subreddits", header);
+        ThreadLogStats.generateStats("wave", header);
+        ThreadLogStats.generateStats("writing numbers", header);
+    }
+
     public static void main(String[] args) throws IOException, JSONException {
         String accessKey = "";
         String secretKey = "";
@@ -129,7 +155,7 @@ public class MainThreadHOC {
         String password = "";
         String threadID = "6uebdr";
         String getID = "dmawbte";
-        String thread = "hexadecimal";
+        String thread = "letters";
         String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
@@ -140,6 +166,7 @@ public class MainThreadHOC {
         HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
         mainThreadHOC.postDataToThread(userCounts, threadID);
         ThreadLogStats.generateStats(thread, header);
+//        mainThreadHOC.updateAllSideThreads();
     }
 
     class HOCUtil {

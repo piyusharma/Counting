@@ -9,6 +9,9 @@ import java.util.*;
 
 class ThreadLogStats {
     static void generateStats(String thread, List<NameValuePair> header) throws IOException, JSONException {
+        if (thread.equals("")) {
+            return;
+        }
         HashMap<String, String> permalinks = new HashMap<>();
         HashMap<String, Integer> userCounts = new HashMap<>();
         HashMap<String, String> firstCount = new HashMap<>();
@@ -26,7 +29,7 @@ class ThreadLogStats {
                 userCounts.put(valueUpdate[0], userCounts.get(valueUpdate[0]) + 1);
             } else {
                 Date date = new Date(((long) Double.parseDouble(valueUpdate[1])) * 1000L);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMMM-yyyy' 'k:m:s a");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMMM-yyyy' 'hh:mm:ss");
                 if (permalinks.containsKey(valueUpdate[3])) {
                     firstCount.put(valueUpdate[0], "[" + simpleDateFormat.format(date) + "](" + permalinks.get
                             (valueUpdate[3]) + valueUpdate[2] + ")");
@@ -65,15 +68,18 @@ class ThreadLogStats {
                 rank++;
             }
         }
-        if (thread.equals("powerball")){
+        if (thread.equals("powerball")) {
             postString.append(Utility.powerballSchedule);
         }
         List<NameValuePair> postData = new ArrayList<>();
         postData.add(new BasicNameValuePair("page", Utility.threadNameUtility(thread, 1,
                 0, "")));
         postData.add(new BasicNameValuePair("content", postString.toString()));
-        postData.add(new BasicNameValuePair("reason", "Updated to " + accurateUpTo));
-        HttpRequests.postRequest("https://oauth.reddit.com/r/test_piyush/api/wiki/edit", header, postData);
+        if (!thread.equals("roman numerals")) {
+            postData.add(new BasicNameValuePair("reason", "Updated to " + accurateUpTo));
+        } else {
+            postData.add(new BasicNameValuePair("reason","Updated stats - Unicode characters not allowed"));
+        }
+        System.out.println(HttpRequests.postRequest("https://oauth.reddit.com/r/test_piyush/api/wiki/edit", header, postData));
     }
-
 }
