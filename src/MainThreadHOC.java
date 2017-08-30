@@ -8,14 +8,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class MainThreadHOC {
-    private List<NameValuePair> header = new ArrayList<>();
+    private static List<NameValuePair> header = new ArrayList<>();
     private String getUser;
 
     private LinkedList<Update> TraverseThread(String getID, String threadID) throws IOException, JSONException {
         String topCommentID = getID;
         String parent = "";
         LinkedList<Update> linkedList = new LinkedList<>();
-        String url = createURLFromID(threadID);
+        String url = "https://oauth.reddit.com" + createURLFromID(threadID);
         linkedList.add(getGetUpdate(getID));
         while (!parent.equals(threadID)) {
             String response = HttpRequests.getRequest(url + topCommentID + "/?context=100", header);
@@ -41,12 +41,12 @@ public class MainThreadHOC {
         return linkedList;
     }
 
-    private String createURLFromID(String id) throws IOException, JSONException {
+    static String createURLFromID(String id) throws IOException, JSONException {
         String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + id, header);
         JSONObject jsonObject = new JSONObject(t);
         JSONObject threadJSON = (JSONObject) ((JSONObject) ((JSONArray) ((JSONObject) jsonObject.get("data"))
                 .get("children")).get(0)).get("data");
-        return "https://oauth.reddit.com" + threadJSON.get("permalink");
+        return (String) threadJSON.get("permalink");
     }
 
     private Update getGetUpdate(String id) throws IOException, JSONException {
@@ -63,7 +63,7 @@ public class MainThreadHOC {
         HashMap<String, Integer> hashMap = new HashMap<>();
         Double endingTimestamp = Double.parseDouble(linkedList.peek().getTimestamp());
         Double startingTimestamp = 0.0;
-        String filename = Utility.threadToFilename(thread);
+        String filename = Utility.threadNameUtility(thread,1);
         while (!linkedList.isEmpty()) {
             Update update = linkedList.poll();
             if (!filename.equals("")) {
@@ -80,20 +80,9 @@ public class MainThreadHOC {
         }
         int timeTaken = (int) (endingTimestamp - startingTimestamp);
         TimeFormat timeFormatConverted = Convert(timeTaken);
-        return new HOCUtil(sortHashMap(hashMap), timeFormatConverted);
+        return new HOCUtil(Utility.sortHashMap(hashMap), timeFormatConverted);
     }
 
-    private HashMap<String, Integer> sortHashMap(HashMap<String, Integer> hashMap) {
-        List<Map.Entry<String, Integer>> list = new LinkedList<>(hashMap.entrySet());
-
-        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-
-        HashMap<String, Integer> sortedMap = new LinkedHashMap<>();
-        for (Map.Entry<String, Integer> entry : list) {
-            sortedMap.put(entry.getKey(), entry.getValue());
-        }
-        return sortedMap;
-    }
 
     private TimeFormat Convert(int timeTaken) {
         int seconds = timeTaken % 60;
@@ -118,11 +107,13 @@ public class MainThreadHOC {
             if (!entry.getKey().equals(getUser) && !entry.getKey().equals("[deleted]")) {
                 postString.append(rank).append("|/u/").append(entry.getKey()).append("|").append(entry.getValue())
                         .append("\n");
+                rank++;
             } else if (!entry.getKey().equals("[deleted]")) {
                 postString.append(rank).append("|**/u/").append(entry.getKey()).append("**|").append(entry.getValue())
                         .append("\n");
+                rank++;
             }
-            rank++;
+
         }
         postString.append("\nIt took ").append(hocUtil.hashMap.size()).append(" counters ").append(hocUtil.
                 timeFormat.toString()).append(" to complete this thread. Bold is the user with the get");
@@ -132,22 +123,23 @@ public class MainThreadHOC {
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String accessKey = args[0];
-        String secretKey = args[1];
-        String username = args[2];
-        String password = args[3];
-        String threadID = args[4];
-        String getID = args[5];
-        String thread = args[6];
+        String accessKey = "xtYsNzO4a8Curw";
+        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
+        String username = "piyushsharma301";
+        String password = "loseyourself1";
+        String threadID = "";
+        String getID = "";
+        String thread = "";
         String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
-        mainThreadHOC.header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
+        header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
                 get("access_token")));
-        mainThreadHOC.header.add(new BasicNameValuePair("User-Agent", "Something"));
-        LinkedList<Update> updates = mainThreadHOC.TraverseThread(getID, threadID);
-        HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
-        mainThreadHOC.postDataToThread(userCounts, threadID);
+        header.add(new BasicNameValuePair("User-Agent", "Something"));
+//        LinkedList<Update> updates = mainThreadHOC.TraverseThread(getID, threadID);
+//        HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
+//        mainThreadHOC.postDataToThread(userCounts, threadID);
+        ThreadLogStats.generateStats(thread);
     }
 
     class HOCUtil {
@@ -166,7 +158,7 @@ public class MainThreadHOC {
         private int hours;
         private int days;
 
-        TimeFormat(int seconds,int minutes,int hours,int days){
+        TimeFormat(int seconds, int minutes, int hours, int days) {
             this.seconds = seconds;
             this.minutes = minutes;
             this.hours = hours;
@@ -175,7 +167,7 @@ public class MainThreadHOC {
 
         @Override
         public String toString() {
-            return days+" days "+hours+" hours "+minutes+" minutes "+seconds+" seconds ";
+            return days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds ";
         }
     }
 

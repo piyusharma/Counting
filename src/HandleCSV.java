@@ -8,11 +8,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class HandleCSV {
-    public static List<String> readCSV(String filename) throws FileNotFoundException {
+    public static Stack<String> readCSV(String filename) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(filename));
-        List<String> fileLines = new ArrayList<>();
+        Stack<String> fileLines = new Stack<>();
         scanner.useDelimiter("\n");
 
         while (scanner.hasNext()) {

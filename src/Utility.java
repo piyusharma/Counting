@@ -1,5 +1,7 @@
+import java.util.*;
+
 class Utility {
-    static String threadToFilename(String thread) {
+    static String threadNameUtility(String thread, int operation) {
         switch (thread.toLowerCase()) {
             case "letters": {
 
@@ -78,5 +80,17 @@ class Utility {
             }
         }
         return "";
+    }
+
+    static HashMap<String, Integer> sortHashMap(HashMap<String, Integer> hashMap) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(hashMap.entrySet());
+
+        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+
+        HashMap<String, Integer> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
     }
 }
