@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Created by Blizzard on 05-Aug-17.
- */
 public class HandleCSV {
     public static List<String> readCSV(String filename) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(filename));

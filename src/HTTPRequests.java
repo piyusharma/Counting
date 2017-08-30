@@ -15,12 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * Created by Blizzard on 04-Aug-17.
- */
+
 public class HttpRequests {
 
-    public static String getToken(String accessKey, String secretKey, String username, String password) throws IOException {
+    static String getToken(String accessKey, String secretKey, String username, String password) throws IOException {
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost("https://www.reddit.com/api/v1/access_token");
         String userCredentials = accessKey + ":" + secretKey;
@@ -37,7 +35,7 @@ public class HttpRequests {
         return bufferedReader.readLine();
     }
 
-    public static String getRequest(String url, List<NameValuePair> header) throws IOException {
+    static String getRequest(String url, List<NameValuePair> header) throws IOException {
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet httpGet = new HttpGet(url);
         for (NameValuePair nameValuePair : header) {
