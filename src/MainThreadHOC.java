@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class MainThreadHOC {
-    private static List<NameValuePair> header = new ArrayList<>();
+    private List<NameValuePair> header = new ArrayList<>();
+    private String getUser;
 
     private LinkedList<Update> TraverseThread(String getID, String threadID) throws IOException, JSONException {
         String topCommentID = getID;
@@ -53,19 +54,20 @@ public class MainThreadHOC {
         JSONObject jsonObject = new JSONObject(t);
         JSONObject getJSON = (JSONObject) ((JSONObject) ((JSONArray) ((JSONObject) jsonObject.get("data"))
                 .get("children")).get(0)).get("data");
+        getUser = (String) getJSON.get("author");
         return new Update((String) getJSON.get("id"), (String) getJSON.get("author"),
                 getJSON.get("created").toString(), ((String) getJSON.get("link_id")).split("_")[1]);
     }
 
-    private HOCUtil generateHOC(LinkedList<Update> linkedList) {
+    private HOCUtil generateHOC(LinkedList<Update> linkedList) throws IOException {
         HashMap<String, Integer> hashMap = new HashMap<>();
         Double endingTimestamp = Double.parseDouble(linkedList.peek().getTimestamp());
         Double startingTimestamp = 0.0;
         while (!linkedList.isEmpty()) {
             Update update = linkedList.poll();
+            HandleCSV.appendCSV("test.csv", update.toString() + "\n");
             if (linkedList.isEmpty()) {
                 startingTimestamp = Double.parseDouble(update.getTimestamp());
-                break;
             }
             if (hashMap.containsKey(update.getAuthor())) {
                 hashMap.put(update.getAuthor(), hashMap.get(update.getAuthor()) + 1);
@@ -75,7 +77,19 @@ public class MainThreadHOC {
         }
         int timeTaken = (int) (endingTimestamp - startingTimestamp);
         TimeFormat timeFormatConverted = Convert(timeTaken);
-        return new HOCUtil(hashMap, timeFormatConverted);
+        return new HOCUtil(sortHashMap(hashMap), timeFormatConverted);
+    }
+
+    private HashMap<String, Integer> sortHashMap(HashMap<String, Integer> hashMap) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(hashMap.entrySet());
+
+        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+
+        HashMap<String, Integer> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
     }
 
     private TimeFormat Convert(int timeTaken) {
@@ -86,11 +100,30 @@ public class MainThreadHOC {
         return new TimeFormat(seconds, minutes, hours, days);
     }
 
-    private void printMap(Map<String, Integer> map, TimeFormat timeFormat) {
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
+    private void postDataToThread(HOCUtil hocUtil, String threadID) throws IOException, JSONException {
+        String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + threadID, header);
+        JSONObject jsonObject = new JSONObject(t);
+        JSONObject ThreadJSON = (JSONObject) ((JSONObject) ((JSONArray) ((JSONObject) jsonObject.get("data"))
+                .get("children")).get(0)).get("data");
+        StringBuilder postString = new StringBuilder("Thread Participation for " + ThreadJSON.get("title") + "\n\n");
+        List<NameValuePair> postData = new ArrayList<>();
+        postData.add(new BasicNameValuePair("api_type", "json"));
+        postData.add(new BasicNameValuePair("thing_id", "t3_" + threadID));
+        int rank = 1;
+        postString.append("Rank|Username|Counts\n---|---|---\n");
+        for (Map.Entry<String, Integer> entry : hocUtil.hashMap.entrySet()) {
+            if (!entry.getKey().equals(getUser)) {
+                postString.append(rank).append("|").append(entry.getKey()).append("|").append(entry.getValue()).append("\n");
+            } else {
+                postString.append(rank).append("|**").append(entry.getKey()).append("**|").append(entry.getValue()).append("\n");
+            }
+            rank++;
         }
-        System.out.println(timeFormat.toString());
+        postString.append("\nIt took ").append(hocUtil.hashMap.size()).append(" counters ").append(hocUtil.
+                timeFormat.toString()).append(" to complete this thread. Bold is the user with the get");
+        postData.add(new BasicNameValuePair("text", postString.toString()));
+        System.out.println(postData.toString());
+        HttpRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData);
     }
 
     public static void main(String[] args) throws IOException, JSONException {
@@ -98,12 +131,11 @@ public class MainThreadHOC {
                 "piyushsharma301", "loseyourself1");
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
-        header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.get("access_token")));
-        header.add(new BasicNameValuePair("User-Agent", "Something"));
-        String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t1_dmbdddo", header);
-        LinkedList<Update> updates = mainThreadHOC.TraverseThread("dmbdddo", "6wvv5r");
+        mainThreadHOC.header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.get("access_token")));
+        mainThreadHOC.header.add(new BasicNameValuePair("User-Agent", "Something"));
+        LinkedList<Update> updates = mainThreadHOC.TraverseThread("dmawbte", "6uebdr");
         HOCUtil userCounts = mainThreadHOC.generateHOC(updates);
-        mainThreadHOC.printMap(userCounts.hashMap, userCounts.timeFormat);
+        mainThreadHOC.postDataToThread(userCounts, "6uebdr");
     }
 
     class HOCUtil {

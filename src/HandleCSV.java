@@ -21,12 +21,18 @@ public class HandleCSV {
         return fileLines;
     }
 
-    public static void appendCSV(String filename, String data) throws IOException {
+    static void appendCSV(String filename, String data) throws IOException {
+        createFileIfNotExist(filename);
         Files.write(Paths.get(filename), data.getBytes(), StandardOpenOption.APPEND);
     }
 
     public static void clearCSV(String filename) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(filename);
         writer.close();
+    }
+
+    private static void createFileIfNotExist(String filename) throws IOException {
+        File file = new File(filename);
+        file.createNewFile();
     }
 }
