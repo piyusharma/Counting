@@ -63,7 +63,7 @@ public class MainThreadHOC {
         HashMap<String, Integer> hashMap = new HashMap<>();
         Double endingTimestamp = Double.parseDouble(linkedList.peek().getTimestamp());
         Double startingTimestamp = 0.0;
-        String filename = threadToFilename(thread);
+        String filename = Utility.threadToFilename(thread);
         while (!linkedList.isEmpty()) {
             Update update = linkedList.poll();
             if (!filename.equals("")) {
@@ -103,13 +103,6 @@ public class MainThreadHOC {
         return new TimeFormat(seconds, minutes, hours, days);
     }
 
-    private String threadToFilename(String thread) {
-        if (thread.equals("test")) {
-            return "test";
-        }
-        return "";
-    }
-
     private void postDataToThread(HOCUtil hocUtil, String threadID) throws IOException, JSONException {
         String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + threadID, header);
         JSONObject jsonObject = new JSONObject(t);
@@ -135,7 +128,7 @@ public class MainThreadHOC {
                 timeFormat.toString()).append(" to complete this thread. Bold is the user with the get");
         postData.add(new BasicNameValuePair("text", postString.toString()));
         System.out.println(postData.toString());
-        HttpRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData);
+        System.out.println(HttpRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData));
     }
 
     public static void main(String[] args) throws IOException, JSONException {
