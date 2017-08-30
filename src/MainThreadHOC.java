@@ -63,11 +63,12 @@ public class MainThreadHOC {
         HashMap<String, Integer> hashMap = new HashMap<>();
         Double endingTimestamp = Double.parseDouble(linkedList.peek().getTimestamp());
         Double startingTimestamp = 0.0;
-        String filename = Utility.threadNameUtility(thread, 1, 0, "");
+        String filename = "output/" + thread + ".csv";
+        StringBuilder threadLog = new StringBuilder();
         while (!linkedList.isEmpty()) {
             Update update = linkedList.poll();
-            if (!filename.equals("")) {
-                HandleCSV.appendCSV(filename, update.toString() + "\n");
+            if (!thread.equals("")) {
+                threadLog.append(update.toString()).append("\n");
             }
             if (linkedList.isEmpty()) {
                 startingTimestamp = Double.parseDouble(update.getTimestamp());
@@ -78,11 +79,11 @@ public class MainThreadHOC {
                 hashMap.put(update.getAuthor(), 1);
             }
         }
+        HandleCSV.appendCSVToTop(filename, threadLog.toString());
         int timeTaken = (int) (endingTimestamp - startingTimestamp);
         TimeFormat timeFormatConverted = Convert(timeTaken);
         return new HOCUtil(Utility.sortHashMap(hashMap), timeFormatConverted);
     }
-
 
     private TimeFormat Convert(int timeTaken) {
         int seconds = timeTaken % 60;
@@ -118,28 +119,27 @@ public class MainThreadHOC {
         postString.append("\nIt took ").append(hocUtil.hashMap.size()).append(" counters ").append(hocUtil.
                 timeFormat.toString()).append(" to complete this thread. Bold is the user with the get");
         postData.add(new BasicNameValuePair("text", postString.toString()));
-        System.out.println(postData.toString());
         System.out.println(HttpRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData));
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String accessKey = "xtYsNzO4a8Curw";
-        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
-        String username = "piyushsharma301";
-        String password = "loseyourself1";
-        String threadID = "";
-        String getID = "";
-        String thread = "";
+        String accessKey = "";
+        String secretKey = "";
+        String username = "";
+        String password = "";
+        String threadID = "6uebdr";
+        String getID = "dmawbte";
+        String thread = "hexadecimal";
         String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
         header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
                 get("access_token")));
         header.add(new BasicNameValuePair("User-Agent", "Something"));
-//        LinkedList<Update> updates = mainThreadHOC.TraverseThread(getID, threadID);
-//        HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
-//        mainThreadHOC.postDataToThread(userCounts, threadID);
-        ThreadLogStats.generateStats(thread);
+        LinkedList<Update> updates = mainThreadHOC.TraverseThread(getID, threadID);
+        HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
+        mainThreadHOC.postDataToThread(userCounts, threadID);
+        ThreadLogStats.generateStats(thread, header);
     }
 
     class HOCUtil {

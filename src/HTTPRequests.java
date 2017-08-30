@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 class HttpRequests {
 
     static String getToken(String accessKey, String secretKey, String username, String password) throws IOException {
