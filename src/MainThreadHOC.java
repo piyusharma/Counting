@@ -14,7 +14,7 @@ public class MainThreadHOC {
     private LinkedList<Update> TraverseThread(String getID, String threadID) throws IOException, JSONException {
         String topCommentID = getID;
         String parent = "";
-        LinkedList<Update> linkedList = new LinkedList();
+        LinkedList<Update> linkedList = new LinkedList<>();
         String url = createURLFromID(threadID);
         linkedList.add(getGetUpdate(getID));
         while (!parent.equals(threadID)) {
