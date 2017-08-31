@@ -28,7 +28,7 @@ public class HandleCSV {
         while ((line = bufferedReader.readLine()) != null) {
             result.append(line).append("\n");
         }
-        boolean delete = mFile.delete();
+        mFile.delete();
         FileOutputStream fos = new FileOutputStream(mFile);
         fos.write(result.toString().getBytes());
         fos.flush();
