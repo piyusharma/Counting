@@ -29,7 +29,7 @@ class ThreadLogStats {
                 userCounts.put(valueUpdate[0], userCounts.get(valueUpdate[0]) + 1);
             } else {
                 Date date = new Date(((long) Double.parseDouble(valueUpdate[1])) * 1000L);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMMM-yyyy' 'hh:mm:ss");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMMM-yyyy' 'hh:mm:ss a");
                 if (permalinks.containsKey(valueUpdate[3])) {
                     firstCount.put(valueUpdate[0], "[" + simpleDateFormat.format(date) + "](" + permalinks.get
                             (valueUpdate[3]) + valueUpdate[2] + ")");
