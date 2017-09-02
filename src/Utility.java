@@ -50,13 +50,13 @@ class Utility {
             "1 2 3 24 25 + 1|1,196|28,860\n";
 
     static String threadNameUtility(String thread, int operation, int counters, String accurateUpTo) {
-        String commonText = credit +
-                "A total of " + counters + " counters have counted in this Side Thread.(Accurate up to " +
+        String HOCText = "A total of " + counters + " counters have counted in this Thread.(Accurate up to " +
                 "[this](" + accurateUpTo + "))\n" +
                 "\n" +
                 "##Hall of Counters\n" +
                 "Rank|Username|Counts\n" +
                 "---|---|---\n";
+        String commonText = credit + HOCText;
         switch (thread.toLowerCase()) {
             case "letters": {
                 if (operation == 1) {
@@ -324,6 +324,48 @@ class Utility {
                     return "";
                 } else if (operation == 2) {
                     return "";
+                }
+            }
+            case "button": {
+                if (operation == 1) {
+                    return "button_thread";
+                } else if (operation == 2) {
+                    return HOCText;
+                }
+            }
+            case "last subreddit": {
+                if (operation == 1){
+                    return "last_subreddit";
+                } else if (operation == 2){
+                    return HOCText;
+                }
+            }
+            case "fun hobby":{
+                if (operation == 1){
+                    return "fun_hobby";
+                } else if (operation == 2){
+                    return HOCText;
+                }
+            }
+            case "we are mods":{
+                if (operation == 1){
+                    return "i_am_no_goods_commenti";
+                } else if (operation == 2){
+                    return HOCText;
+                }
+            }
+            case "smartstocks":{
+                if (operation == 1){
+                    return "ss_counting_thread";
+                } else if (operation == 2){
+                    return HOCText;
+                }
+            }
+            case "megalounge":{
+                if (operation == 1){
+                    return "megalounge";
+                } else if (operation == 2){
+                    return HOCText;
                 }
             }
         }
