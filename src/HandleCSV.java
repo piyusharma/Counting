@@ -42,12 +42,17 @@ public class HandleCSV {
         }
     }
 
+    static void writeFile(String filename, String data) throws IOException {
+        createFileIfNotExist(filename);
+        Files.write(Paths.get(filename),data.getBytes(),StandardOpenOption.WRITE);
+    }
+
     public static void clearCSV(String filename) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(filename);
         writer.close();
     }
 
-    private static boolean createFileIfNotExist(String filename) throws IOException {
+    static boolean createFileIfNotExist(String filename) throws IOException {
         File file = new File(filename);
         return file.createNewFile();
     }
