@@ -50,7 +50,7 @@ public class LiveCounting {
         HandleCSV.appendCSVToTop(getLatestChatFile(), stringBuilder.toString());
     }
 
-    private int getFileNumber() throws FileNotFoundException {
+    static int getFileNumber() throws FileNotFoundException {
         return Integer.parseInt(HandleCSV.readCSV("LiveCounting/lastChatFile.txt").pop());
     }
 
@@ -76,30 +76,6 @@ public class LiveCounting {
         return previousChatData;
     }
 
-    private void getCountFromChat(String s) {
-        Character[] allowedCharacters = {',','-',' '};
-        StringBuilder number = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isDigit(s.charAt(i))) {
-                number.append(s.charAt(i));
-            }
-        }
-    }
-
-    private void updateStats() throws FileNotFoundException, JSONException {
-        Map<String, Integer> userCounts = new HashMap<>();
-        for (int i = 0; i <= getFileNumber(); i++) {
-            Stack<String> chatRead = HandleCSV.readCSV("LiveCounting/chat" + i + ".json");
-            JSONArray chats = new JSONArray(chatRead.pop());
-            for (int j = 0; j < chats.length(); j++) {
-                JSONObject chat = new JSONObject(chats.get(j));
-            }
-        }
-    }
-
-    private void updateStatsFromBeginning() {
-
-    }
 
     private void checkValidityOfJson() throws FileNotFoundException, JSONException {
         Stack<String> k = HandleCSV.readCSV(getLatestChatFile());
@@ -110,19 +86,20 @@ public class LiveCounting {
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String accessKey = "xtYsNzO4a8Curw";
-        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
-        String username = "piyushsharma301";
-        String password = "loseyourself1";
-        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
-        JSONObject jsonObject = new JSONObject(s);
-        LiveCounting liveCounting = new LiveCounting();
-        header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
-                get("access_token")));
-        header.add(new BasicNameValuePair("User-Agent", "Something"));
-        PreviousChatData previousChatData = liveCounting.getLastChatFileData();
-        liveCounting.traverseThreadWriteToFile("ta535s1hq2je", previousChatData);
-        liveCounting.checkValidityOfJson();
+//        String accessKey = "xtYsNzO4a8Curw";
+//        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
+//        String username = "piyushsharma301";
+//        String password = "loseyourself1";
+//        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
+//        JSONObject jsonObject = new JSONObject(s);
+//        LiveCounting liveCounting = new LiveCounting();
+//        header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
+//                get("access_token")));
+//        header.add(new BasicNameValuePair("User-Agent", "Something"));
+//        PreviousChatData previousChatData = liveCounting.getLastChatFileData();
+//        liveCounting.traverseThreadWriteToFile("ta535s1hq2je", previousChatData);
+//        liveCounting.checkValidityOfJson();
+        UpdateLCStats.updateStats();
     }
 
     private class PreviousChatData {
