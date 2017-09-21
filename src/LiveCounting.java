@@ -7,17 +7,15 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class LiveCounting {
     private static List<NameValuePair> header = new ArrayList<>();
 
     private void traverseThreadWriteToFile(String liveThreadID, PreviousChatData previousChatData) throws IOException, JSONException {
-        String limitStatement = "?limit=100";
+        String limitStatement = "limit=100";
         String redditBaseUrl = "https://oauth.reddit.com/live/";
-        String response = HttpRequests.getRequest(redditBaseUrl + liveThreadID + limitStatement, header);
+        String response = HttpRequests.getRequest(redditBaseUrl + liveThreadID + "?" + limitStatement, header);
         boolean reachedStartPoint = false;
         JSONArray tempArray = new JSONArray();
         while (((JSONArray) ((JSONObject) new JSONObject(response).get("data")).get("children")).length() != 0) {
@@ -47,8 +45,8 @@ public class LiveCounting {
             stringBuilder.append(lastChatFileData.get(i));
             stringBuilder.append(",");
         }
-        RandomAccessFile randomAccessFile = new RandomAccessFile(getLatestChatFile(),"rw");
-        randomAccessFile.write(44);
+        RandomAccessFile randomAccessFile = new RandomAccessFile(getLatestChatFile(), "rw");
+        randomAccessFile.write(32);
         HandleCSV.appendCSVToTop(getLatestChatFile(), stringBuilder.toString());
     }
 
@@ -78,7 +76,28 @@ public class LiveCounting {
         return previousChatData;
     }
 
-    private void updateStats() {
+    private void getCountFromChat(String s) {
+        Character[] allowedCharacters = {',','-',' '};
+        StringBuilder number = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isDigit(s.charAt(i))) {
+                number.append(s.charAt(i));
+            }
+        }
+    }
+
+    private void updateStats() throws FileNotFoundException, JSONException {
+        Map<String, Integer> userCounts = new HashMap<>();
+        for (int i = 0; i <= getFileNumber(); i++) {
+            Stack<String> chatRead = HandleCSV.readCSV("LiveCounting/chat" + i + ".json");
+            JSONArray chats = new JSONArray(chatRead.pop());
+            for (int j = 0; j < chats.length(); j++) {
+                JSONObject chat = new JSONObject(chats.get(j));
+            }
+        }
+    }
+
+    private void updateStatsFromBeginning() {
 
     }
 
