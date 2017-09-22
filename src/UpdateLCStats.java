@@ -16,12 +16,6 @@ class UpdateLCStats {
     private static HashMap<String, Integer> assistCounts = new HashMap<>();
     private static HashMap<String, Integer> getCounts = new HashMap<>();
     private static HashMap<String, Integer> repdigCounts = new HashMap<>();
-    private static Stack<String> trip3 = new Stack<>();
-    private static Stack<String> trip6 = new Stack<>();
-    private static Stack<String> drome = new Stack<>();
-    private static Stack<String> assist = new Stack<>();
-    private static Stack<String> get = new Stack<>();
-    private static Stack<String> repdig = new Stack<>();
     private static Stack<String> trip3Stack = new Stack<>();
     private static Stack<String> trip6Stack = new Stack<>();
     private static Stack<String> dromeStack = new Stack<>();
@@ -29,14 +23,14 @@ class UpdateLCStats {
     private static Stack<String> getStack = new Stack<>();
     private static Stack<String> repdigStack = new Stack<>();
     static HashMap<String, String> firstCount = new HashMap<>();
-    static HashMap<String, KPart> kPart = new HashMap<>();
+    private static HashMap<String, KPart> kPart = new HashMap<>();
     static HashMap<String, Integer> dayPart = new HashMap<>();
 
     static void updateStats() throws FileNotFoundException, JSONException {
         for (int i = 0; i <= LiveCounting.getFileNumber(); i++) {
             Stack<String> chatRead = HandleCSV.readCSV("LiveCounting/chat" + i + ".json");
             JSONArray chats = new JSONArray(chatRead.pop());
-            for (int j = 0; j < chats.length(); j++) {
+            for (int j = chats.length() - 1; j > -1; j--) {
                 JSONObject chat = (JSONObject) chats.get(j);
                 String number = getCountFromChat((String) chat.get("body"));
                 if (!number.equals("") && !((Boolean) chat.get("stricken"))) {
@@ -53,8 +47,8 @@ class UpdateLCStats {
                     } else {
                         lastThree = number;
                     }
-                    int k = Integer.parseInt(number) % 1000;
-                    updateKpartMap(kPart, author, k);
+//                    int k = Integer.parseInt(number) % 1000;
+//                    updateKpartMap(kPart, author, k);
                     updateMap(userCounts, author);
                     switch (lastThree) {
                         case "333":
@@ -84,18 +78,7 @@ class UpdateLCStats {
                     }
                 }
             }
-            transferValues();
         }
-        printStack(trip3);
-    }
-
-    private static void transferValues() {
-        transferValues(trip3Stack, trip3);
-        transferValues(trip6Stack, trip6);
-        transferValues(dromeStack, drome);
-        transferValues(assistStack, assist);
-        transferValues(getStack, get);
-        transferValues(repdigStack, repdig);
     }
 
     private static void transferValues(Stack<String> a, Stack<String> b) {
