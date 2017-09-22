@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-/**
- * Created by Piyush Sharma on 21-Sep-17.
- */
 class UpdateLCStats {
     private static HashMap<String, Integer> userCounts = new HashMap<>();
     private static HashMap<String, Integer> trip3Counts = new HashMap<>();
@@ -31,12 +28,12 @@ class UpdateLCStats {
     private static Stack<String> assistStack = new Stack<>();
     private static Stack<String> getStack = new Stack<>();
     private static Stack<String> repdigStack = new Stack<>();
-//    static HashMap<String, String> firstCount = new HashMap<>();
-//    static HashMap<String, Integer> kPart = new HashMap<>();
-//    static HashMap<String, Integer> dayPart = new HashMap<>();
+    static HashMap<String, String> firstCount = new HashMap<>();
+    static HashMap<String, KPart> kPart = new HashMap<>();
+    static HashMap<String, Integer> dayPart = new HashMap<>();
 
     static void updateStats() throws FileNotFoundException, JSONException {
-        for (int i = 0; i <= 1/*LiveCounting.getFileNumber()*/; i++) {
+        for (int i = 0; i <= LiveCounting.getFileNumber(); i++) {
             Stack<String> chatRead = HandleCSV.readCSV("LiveCounting/chat" + i + ".json");
             JSONArray chats = new JSONArray(chatRead.pop());
             for (int j = 0; j < chats.length(); j++) {
@@ -56,6 +53,8 @@ class UpdateLCStats {
                     } else {
                         lastThree = number;
                     }
+                    int k = Integer.parseInt(number) % 1000;
+                    updateKpartMap(kPart, author, k);
                     updateMap(userCounts, author);
                     switch (lastThree) {
                         case "333":
@@ -119,6 +118,22 @@ class UpdateLCStats {
         }
     }
 
+    private static void updateKpartMap(HashMap<String, KPart> hashMap, String author, int k) {
+        if (hashMap.containsKey(author)) {
+            if (k > hashMap.get(author).lastK) {
+                hashMap.put(author, new KPart(k, kPart.get(author).value + 1));
+            }
+        } else {
+            hashMap.put(author, new KPart(k, 1));
+        }
+    }
+
+    private static void updateDayPartMap(HashMap<String, KPart> hashMap, String author, int timestamp) {
+        if (hashMap.containsKey(author)) {
+
+        }
+    }
+
     private static boolean isPalindrome(String s) {
         int i = 0;
         int j = s.length() - 1;
@@ -140,7 +155,7 @@ class UpdateLCStats {
         int j;
         boolean result = true;
         if (length % 2 == 0) {
-            j = (length / 2) + 1;
+            j = (length / 2);
             while (j < length) {
                 if (s.charAt(i) != s.charAt(j)) {
                     result = false;
@@ -178,6 +193,16 @@ class UpdateLCStats {
     private static void printStack(Stack k) {
         while (!k.empty()) {
             System.out.println(k.pop());
+        }
+    }
+
+    public static class KPart {
+        int lastK;
+        int value;
+
+        KPart(int k, int i) {
+            this.lastK = k;
+            this.value = i;
         }
     }
 }
