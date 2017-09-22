@@ -149,13 +149,13 @@ public class MainThreadHOC {
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String accessKey = "";
-        String secretKey = "";
-        String username = "";
-        String password = "";
-        String threadID = "6uebdr";
-        String getID = "dmawbte";
-        String thread = "letters";
+        String accessKey = "xtYsNzO4a8Curw";
+        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
+        String username = "piyushsharma301";
+        String password = "loseyourself1";
+        String threadID = "6e83a6";
+        String getID = "dmsuo1p";
+        String thread = "wave";
         String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
