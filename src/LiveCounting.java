@@ -85,21 +85,27 @@ public class LiveCounting {
         }
     }
 
+    private String[] lastStatUpdatePoint() throws FileNotFoundException {
+        Stack<String> k = HandleCSV.readCSV("LiveCounting/UpdatedUpto");
+        return new String[]{k.pop(),k.pop()};
+    }
+
     public static void main(String[] args) throws IOException, JSONException {
-//        String accessKey = "xtYsNzO4a8Curw";
-//        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
-//        String username = "piyushsharma301";
-//        String password = "loseyourself1";
-//        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
-//        JSONObject jsonObject = new JSONObject(s);
-//        LiveCounting liveCounting = new LiveCounting();
-//        header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
-//                get("access_token")));
-//        header.add(new BasicNameValuePair("User-Agent", "Something"));
-//        PreviousChatData previousChatData = liveCounting.getLastChatFileData();
-//        liveCounting.traverseThreadWriteToFile("ta535s1hq2je", previousChatData);
-//        liveCounting.checkValidityOfJson();
-        UpdateLCStats.updateStats();
+        String accessKey = "xtYsNzO4a8Curw";
+        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
+        String username = "piyushsharma301";
+        String password = "loseyourself1";
+        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
+        JSONObject jsonObject = new JSONObject(s);
+        LiveCounting liveCounting = new LiveCounting();
+        header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
+                get("access_token")));
+        header.add(new BasicNameValuePair("User-Agent", "Something"));
+        PreviousChatData previousChatData = liveCounting.getLastChatFileData();
+        liveCounting.traverseThreadWriteToFile("ta535s1hq2je", previousChatData);
+        liveCounting.checkValidityOfJson();
+//        String[] updatePoint = liveCounting.lastStatUpdatePoint();
+//        UpdateLCStats.updateStats(Integer.parseInt(updatePoint[1]),updatePoint[0]);
     }
 
     private class PreviousChatData {

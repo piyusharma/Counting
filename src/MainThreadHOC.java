@@ -153,9 +153,9 @@ public class MainThreadHOC {
         String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
         String username = "piyushsharma301";
         String password = "loseyourself1";
-        String threadID = "6e83a6";
-        String getID = "dmsuo1p";
-        String thread = "wave";
+        String threadID = "6s148g";
+        String getID = "dn6lzdt";
+        String thread = "";
         String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
@@ -165,7 +165,7 @@ public class MainThreadHOC {
         LinkedList<Update> updates = mainThreadHOC.TraverseThread(getID, threadID);
         HOCUtil userCounts = mainThreadHOC.generateHOC(updates, thread);
         mainThreadHOC.postDataToThread(userCounts, threadID);
-        ThreadLogStats.generateStats(thread, header);
+//        ThreadLogStats.generateStats(thread, header);
 //        mainThreadHOC.updateAllSideThreads();
     }
 

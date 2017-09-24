@@ -2,11 +2,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.*;
 
 class UpdateLCStats {
     private static HashMap<String, Integer> userCounts = new HashMap<>();
@@ -22,18 +20,28 @@ class UpdateLCStats {
     private static Stack<String> assistStack = new Stack<>();
     private static Stack<String> getStack = new Stack<>();
     private static Stack<String> repdigStack = new Stack<>();
-    static HashMap<String, String> firstCount = new HashMap<>();
+    //    static HashMap<String, String> firstCount = new HashMap<>();
     private static HashMap<String, KPart> kPart = new HashMap<>();
-    static HashMap<String, Integer> dayPart = new HashMap<>();
+//    static HashMap<String, Integer> dayPart = new HashMap<>();
 
-    static void updateStats() throws FileNotFoundException, JSONException {
-        for (int i = 0; i <= LiveCounting.getFileNumber(); i++) {
+    static void updateStats(int updatedToFileNumber, String updatedToID) throws IOException, JSONException {
+        int k = 0;
+        int lastCount = 0;
+        boolean statStarted = false;
+        int numberChat = 0;
+        for (int i = updatedToFileNumber; i <= LiveCounting.getFileNumber(); i++) {
             Stack<String> chatRead = HandleCSV.readCSV("LiveCounting/chat" + i + ".json");
             JSONArray chats = new JSONArray(chatRead.pop());
             for (int j = chats.length() - 1; j > -1; j--) {
                 JSONObject chat = (JSONObject) chats.get(j);
                 String number = getCountFromChat((String) chat.get("body"));
-                if (!number.equals("") && !((Boolean) chat.get("stricken"))) {
+                try {
+                    numberChat = Integer.parseInt(number);
+                } catch (NumberFormatException ignored) {
+
+                }
+                if (!number.equals("") && !((Boolean) chat.get("stricken")) && statStarted && numberChat > lastCount) {
+                    lastCount = numberChat;
                     String author;
                     try {
                         author = (String) chat.get("author");
@@ -47,50 +55,56 @@ class UpdateLCStats {
                     } else {
                         lastThree = number;
                     }
-//                    int k = Integer.parseInt(number) % 1000;
-//                    updateKpartMap(kPart, author, k);
-                    updateMap(userCounts, author);
-                    switch (lastThree) {
-                        case "333":
-                            updateMap(trip3Counts, author);
-                            trip3Stack.push(createEntry(author, id, number));
-                            break;
-                        case "666":
-                            updateMap(trip6Counts, author);
-                            trip6Stack.push(createEntry(author, id, number));
-                            break;
-                        case "999":
-                            updateMap(assistCounts, author);
-                            assistStack.push(createEntry(author, id, number));
-                            break;
-                        case "000":
-                            updateMap(getCounts, author);
-                            getStack.push(createEntry(author, id, number));
-                            break;
+                    int checkKValue = lastCount / 1000;
+                    if (checkKValue == k + 1) {
+                        k++;
                     }
-                    if (isPalindrome(number)) {
-                        updateMap(dromeCounts, author);
-                        dromeStack.push(createEntry(author, id, number));
-                    }
-                    if (isRepdig(number)) {
-                        updateMap(repdigCounts, author);
-                        repdigStack.push(createEntry(author, id, number));
-                    }
+                    updateMapsAndStacks(author, k, lastThree, id, number);
+                }
+                if (updatedToID.equals(chat.get("id"))) {
+                    statStarted = true;
                 }
             }
         }
+        writeOutputToFiles();
     }
 
-    private static void transferValues(Stack<String> a, Stack<String> b) {
-        while (!a.empty()) {
-            b.push(a.pop());
+    private static void updateMapsAndStacks(String author, int k, String lastThree, String id, String number) {
+        updateKpartMap(kPart, author, k);
+        updateMap(userCounts, author);
+        switch (lastThree) {
+            case "333":
+                updateMap(trip3Counts, author);
+                trip3Stack.push(createEntry(author, id, number));
+                break;
+            case "666":
+                updateMap(trip6Counts, author);
+                trip6Stack.push(createEntry(author, id, number));
+                break;
+            case "999":
+                updateMap(assistCounts, author);
+                assistStack.push(createEntry(author, id, number));
+                break;
+            case "000":
+                updateMap(getCounts, author);
+                getStack.push(createEntry(author, id, number));
+                break;
+        }
+        if (isPalindrome(number)) {
+            updateMap(dromeCounts, author);
+            dromeStack.push(createEntry(author, id, number));
+        }
+        if (isRepdig(number)) {
+            updateMap(repdigCounts, author);
+            repdigStack.push(createEntry(author, id, number));
         }
     }
 
     private static String createEntry(String author, String id, String number) {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
         String redditBaseUpdateUrl = "https://www.reddit.com/live/ta535s1hq2je/updates/";
         String url = redditBaseUpdateUrl + id;
-        return "[" + number + "](" + url + ") - " + author;
+        return "[" + numberFormat.format(Integer.parseInt(number)) + "](" + url + ") - /u/" + author;
     }
 
     private static void updateMap(HashMap<String, Integer> hashMap, String author) {
@@ -111,11 +125,48 @@ class UpdateLCStats {
         }
     }
 
-    private static void updateDayPartMap(HashMap<String, KPart> hashMap, String author, int timestamp) {
-        if (hashMap.containsKey(author)) {
-
-        }
+    private static void writeOutputToFiles() throws IOException {
+        HandleCSV.writeFile("LC output/333.txt", convertMapToTable(Utility.sortHashMap(trip3Counts)));
+        HandleCSV.writeFile("LC output/666.txt", convertMapToTable(Utility.sortHashMap(trip6Counts)));
+        HandleCSV.writeFile("LC output/assists.txt", convertMapToTable(Utility.sortHashMap(assistCounts)));
+        HandleCSV.writeFile("LC output/gets.txt", convertMapToTable(Utility.sortHashMap(getCounts)));
+        HandleCSV.writeFile("LC output/repdig.txt", convertMapToTable(Utility.sortHashMap(repdigCounts)));
+        HandleCSV.writeFile("LC output/drome.txt", convertMapToTable(Utility.sortHashMap(dromeCounts)));
+        HandleCSV.writeFile("LC output/333logs.txt", convertStackToLog(trip3Stack));
+        HandleCSV.writeFile("LC output/666logs.txt", convertStackToLog(trip6Stack));
+        HandleCSV.writeFile("LC output/assistslogs.txt", convertStackToLog(assistStack));
+        HandleCSV.writeFile("LC output/getslogs.txt", convertStackToLog(getStack));
+        HandleCSV.writeFile("LC output/repdiglogs.txt", convertStackToLog(repdigStack));
+        HandleCSV.writeFile("LC output/dromelogs.txt", convertStackToLog(dromeStack));
     }
+
+    private static String convertStackToLog(Stack<String> stack) {
+        StringBuilder logString = new StringBuilder();
+        while (!stack.empty()) {
+            logString.append(stack.pop()).append("\n");
+        }
+        return logString.toString();
+    }
+
+    private static String convertMapToTable(HashMap<String, Integer> hashMap) {
+        int rank = 1;
+        StringBuilder tableString = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : hashMap.entrySet()) {
+            if (!entry.getKey().equals("[deleted]")) {
+                tableString.append(rank).append("|/u/").append(entry.getKey()).append("|")
+                        .append(entry.getValue())
+                        .append("\n");
+                rank++;
+            }
+        }
+        return tableString.toString();
+    }
+
+//    private static void updateDayPartMap(HashMap<String, KPart> hashMap, String author, int timestamp) {
+//        if (hashMap.containsKey(author)) {
+//
+//        }
+//    }
 
     private static boolean isPalindrome(String s) {
         int i = 0;
@@ -154,8 +205,8 @@ class UpdateLCStats {
     }
 
     private static String getCountFromChat(String s) {
-        List<Character> allowedCharacters = Arrays.asList(',', ' ', '.');
-        List<Character> allowedCharactersBeginning = Arrays.asList('~', '^', '#', '*', '>', '`', '\n');
+        List<Character> allowedCharacters = Arrays.asList(',', ' ', '.', '*');
+        List<Character> allowedCharactersBeginning = Arrays.asList('~', '^', '#', '>', '`', '\n');
         StringBuilder number = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             if (Character.isDigit(s.charAt(i))) {
@@ -171,12 +222,6 @@ class UpdateLCStats {
             }
         }
         return number.toString();
-    }
-
-    private static void printStack(Stack k) {
-        while (!k.empty()) {
-            System.out.println(k.pop());
-        }
     }
 
     public static class KPart {
