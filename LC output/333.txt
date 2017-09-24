@@ -47,7 +47,7 @@
 47|/u/TOP_27|3
 48|/u/DontCareILoveIt|3
 49|/u/10CountsADay|3
-50|Saurus|2
+50|/u/Count-a-Saurus|2
 51|/u/zotc|2
 52|/u/zhige|2
 53|/u/stalkcm|2

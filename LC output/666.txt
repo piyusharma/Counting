@@ -78,8 +78,8 @@
 78|/u/CantStopLookingAtMe|2
 79|/u/Adinida|2
 80|/u/10CountsADay|2
-81|cube|1
-82|Saurus|1
+81|/u/parker-cube|1
+82|/u/Count-a-Saurus|1
 83|/u/zotc|1
 84|/u/wertercatt|1
 85|/u/viroverix|1

@@ -75,7 +75,7 @@
 75|/u/NubCaeks|3
 76|/u/DanTheStripe|3
 77|/u/1300chickens|3
-78|Saurus|2
+78|/u/Count-a-Saurus|2
 79|/u/zotc|2
 80|/u/the_researcher|2
 81|/u/stalkcm|2
@@ -94,8 +94,8 @@
 94|/u/BOTTOM_20|2
 95|/u/Adinida|2
 96|/u/4FrSw|2
-97|R3DF0X|1
-98|Available|1
+97|/u/-R3DF0X|1
+98|/u/_Username-Available|1
 99|/u/yodaisdancing|1
 100|/u/xia__|1
 101|/u/xanmangaming|1
