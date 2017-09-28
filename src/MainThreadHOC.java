@@ -149,10 +149,10 @@ public class MainThreadHOC {
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String accessKey = "xtYsNzO4a8Curw";
-        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
-        String username = "piyushsharma301";
-        String password = "loseyourself1";
+        String accessKey = "";
+        String secretKey = "";
+        String username = "";
+        String password = "";
         String threadID = "6s148g";
         String getID = "dn6lzdt";
         String thread = "";

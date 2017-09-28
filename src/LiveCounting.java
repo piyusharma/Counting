@@ -91,10 +91,10 @@ public class LiveCounting {
     }
 
     public static void main(String[] args) throws IOException, JSONException {
-        String accessKey = "xtYsNzO4a8Curw";
-        String secretKey = "00w7cP3wUcuyIjQdtgh1g7JKL9c";
-        String username = "piyushsharma301";
-        String password = "loseyourself1";
+        String accessKey = "";
+        String secretKey = "";
+        String username = "";
+        String password = "";
         String s = HttpRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         LiveCounting liveCounting = new LiveCounting();
