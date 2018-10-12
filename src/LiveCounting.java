@@ -1,5 +1,6 @@
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +16,7 @@ public class LiveCounting {
     private void traverseThreadWriteToFile(String liveThreadID, PreviousChatData previousChatData) throws IOException, JSONException {
         String limitStatement = "limit=100";
         String redditBaseUrl = "https://oauth.reddit.com/live/";
-        String response = HttpRequests.getRequest(redditBaseUrl + liveThreadID + "?" + limitStatement, header);
+        String response = HTTPRequests.getRequest(redditBaseUrl + liveThreadID + "?" + limitStatement, header);
         boolean reachedStartPoint = false;
         JSONArray tempArray = new JSONArray();
         while (((JSONArray) ((JSONObject) new JSONObject(response).get("data")).get("children")).length() != 0) {
@@ -32,7 +33,7 @@ public class LiveCounting {
             if (reachedStartPoint) {
                 break;
             }
-            response = HttpRequests.getRequest(redditBaseUrl + liveThreadID + "?after=" +
+            response = HTTPRequests.getRequest(redditBaseUrl + liveThreadID + "?after=" +
                     ((JSONObject) ((JSONObject) jsonArray.get(jsonArray.length() - 1)).get("data")).get("name")
                     + "&" + limitStatement, header);
         }
@@ -95,7 +96,7 @@ public class LiveCounting {
         String secretKey = "";
         String username = "";
         String password = "";
-        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
+        String s = HTTPRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         LiveCounting liveCounting = new LiveCounting();
         header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.

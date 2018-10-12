@@ -80,6 +80,6 @@ class ThreadLogStats {
         } else {
             postData.add(new BasicNameValuePair("reason","Updated stats - Unicode characters not allowed"));
         }
-        System.out.println(HttpRequests.postRequest("https://oauth.reddit.com/r/test_piyush/api/wiki/edit", header, postData));
+        System.out.println(HTTPRequests.postRequest("https://oauth.reddit.com/r/test_piyush/api/wiki/edit", header, postData));
     }
 }

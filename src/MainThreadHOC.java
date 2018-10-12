@@ -18,7 +18,7 @@ public class MainThreadHOC {
         String url = "https://oauth.reddit.com" + createURLFromID(threadID);
         linkedList.add(getGetUpdate(getID));
         while (!parent.equals(threadID)) {
-            String response = HttpRequests.getRequest(url + topCommentID + "/?context=100", header);
+            String response = HTTPRequests.getRequest(url + topCommentID + "/?context=100", header);
             JSONArray jsonArray = new JSONArray(response);
             JSONObject updateJSON = (JSONObject) ((JSONObject) (((JSONArray) ((JSONObject)
                     ((JSONObject) jsonArray.get(1)).get("data")).get("children")).get(0))).get("data");
@@ -42,7 +42,7 @@ public class MainThreadHOC {
     }
 
     static String createURLFromID(String id) throws IOException, JSONException {
-        String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + id, header);
+        String t = HTTPRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + id, header);
         JSONObject jsonObject = new JSONObject(t);
         JSONObject threadJSON = (JSONObject) ((JSONObject) ((JSONArray) ((JSONObject) jsonObject.get("data"))
                 .get("children")).get(0)).get("data");
@@ -50,7 +50,7 @@ public class MainThreadHOC {
     }
 
     private Update getGetUpdate(String id) throws IOException, JSONException {
-        String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t1_" + id, header);
+        String t = HTTPRequests.getRequest("https://oauth.reddit.com/api/info?id=t1_" + id, header);
         JSONObject jsonObject = new JSONObject(t);
         JSONObject getJSON = (JSONObject) ((JSONObject) ((JSONArray) ((JSONObject) jsonObject.get("data"))
                 .get("children")).get(0)).get("data");
@@ -94,7 +94,7 @@ public class MainThreadHOC {
     }
 
     private void postDataToThread(HOCUtil hocUtil, String threadID) throws IOException, JSONException {
-        String t = HttpRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + threadID, header);
+        String t = HTTPRequests.getRequest("https://oauth.reddit.com/api/info?id=t3_" + threadID, header);
         JSONObject jsonObject = new JSONObject(t);
         JSONObject ThreadJSON = (JSONObject) ((JSONObject) ((JSONArray) ((JSONObject) jsonObject.get("data"))
                 .get("children")).get(0)).get("data");
@@ -119,7 +119,7 @@ public class MainThreadHOC {
         postString.append("\nIt took ").append(hocUtil.hashMap.size()).append(" counters ").append(hocUtil.
                 timeFormat.toString()).append(" to complete this thread. Bold is the user with the get");
         postData.add(new BasicNameValuePair("text", postString.toString()));
-        System.out.println(HttpRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData));
+        System.out.println(HTTPRequests.postRequest("https://oauth.reddit.com/api/comment", header, postData));
     }
 
     private void updateAllSideThreads() throws IOException, JSONException {
@@ -156,7 +156,7 @@ public class MainThreadHOC {
         String threadID = "6s148g";
         String getID = "dn6lzdt";
         String thread = "";
-        String s = HttpRequests.getToken(accessKey, secretKey, username, password);
+        String s = HTTPRequests.getToken(accessKey, secretKey, username, password);
         JSONObject jsonObject = new JSONObject(s);
         MainThreadHOC mainThreadHOC = new MainThreadHOC();
         header.add(new BasicNameValuePair("Authorization", "bearer " + jsonObject.
